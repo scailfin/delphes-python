@@ -47,6 +47,7 @@ RUN mkdir /code && \
     wget http://hepmc.web.cern.ch/hepmc/releases/hepmc${HEPMC_VERSION}.tgz && \
     tar xvfz hepmc${HEPMC_VERSION}.tgz && \
     mv HepMC-${HEPMC_VERSION} src && \
+    source scl_source enable devtoolset-8 && \
     cmake \
       -DCMAKE_CXX_COMPILER=$(command -v g++) \
       -DCMAKE_BUILD_TYPE=Release \
@@ -68,6 +69,7 @@ RUN mkdir /code && \
     wget http://fastjet.fr/repo/fastjet-${FASTJET_VERSION}.tar.gz && \
     tar xvfz fastjet-${FASTJET_VERSION}.tar.gz && \
     cd fastjet-${FASTJET_VERSION} && \
+    source scl_source enable devtoolset-8 && \
     ./configure --help && \
     export CXX=$(command -v g++) && \
     export PYTHON=$(command -v python3) && \
@@ -87,6 +89,7 @@ RUN mkdir /code && \
     wget https://lhapdf.hepforge.org/downloads/?f=LHAPDF-${LHAPDF_VERSION}.tar.gz -O LHAPDF-${LHAPDF_VERSION}.tar.gz && \
     tar xvfz LHAPDF-${LHAPDF_VERSION}.tar.gz && \
     cd LHAPDF-${LHAPDF_VERSION} && \
+    source scl_source enable devtoolset-8 && \
     ./configure --help && \
     export CXX=$(command -v g++) && \
     export PYTHON=$(command -v python3) && \
@@ -105,6 +108,7 @@ RUN mkdir /code && \
     wget "https://pythia.org/download/pythia${PYTHIA_VERSION:0:2}/pythia${PYTHIA_VERSION}.tgz" && \
     tar xvfz pythia${PYTHIA_VERSION}.tgz && \
     cd pythia${PYTHIA_VERSION} && \
+    source scl_source enable devtoolset-8 && \
     ./configure --help && \
     export PYTHON_MINOR_VERSION=${PYTHON_VERSION::-3} && \
     ./configure \
