@@ -39,6 +39,91 @@ RUN yum update -y && \
     python -m pip --no-cache-dir install --requirement /tmp/requirements.txt && \
     python -m pip list
 
+# Install HepMC
+ARG HEPMC_VERSION=2.06.11
+RUN mkdir /code && \
+    cd /code && \
+    wget http://hepmc.web.cern.ch/hepmc/releases/hepmc${HEPMC_VERSION}.tgz && \
+    tar xvfz hepmc${HEPMC_VERSION}.tgz && \
+    mv HepMC-${HEPMC_VERSION} src && \
+    cmake \
+      -DCMAKE_CXX_COMPILER=$(command -v g++) \
+      -DCMAKE_BUILD_TYPE=Release \
+      -Dbuild_docs:BOOL=OFF \
+      -Dmomentum:STRING=MEV \
+      -Dlength:STRING=MM \
+      -DCMAKE_INSTALL_PREFIX=/usr/local/venv \
+      -S src \
+      -B build && \
+    cmake build -L && \
+    cmake --build build -- -j$(($(nproc) - 1)) && \
+    cmake --build build --target install && \
+    rm -rf /code
+
+# Install FastJet
+ARG FASTJET_VERSION=3.3.4
+RUN mkdir /code && \
+    cd /code && \
+    wget http://fastjet.fr/repo/fastjet-${FASTJET_VERSION}.tar.gz && \
+    tar xvfz fastjet-${FASTJET_VERSION}.tar.gz && \
+    cd fastjet-${FASTJET_VERSION} && \
+    ./configure --help && \
+    export CXX=$(command -v g++) && \
+    export PYTHON=$(command -v python3) && \
+    export PYTHON_CONFIG=$(find /usr/local/ -iname "python-config.py") && \
+    ./configure \
+      --prefix=/usr/local/venv \
+      --enable-pyext=yes && \
+    make -j$(($(nproc) - 1)) && \
+    make check && \
+    make install && \
+    rm -rf /code
+
+# Install LHAPDF
+ARG LHAPDF_VERSION=6.3.0
+RUN mkdir /code && \
+    cd /code && \
+    wget https://lhapdf.hepforge.org/downloads/?f=LHAPDF-${LHAPDF_VERSION}.tar.gz -O LHAPDF-${LHAPDF_VERSION}.tar.gz && \
+    tar xvfz LHAPDF-${LHAPDF_VERSION}.tar.gz && \
+    cd LHAPDF-${LHAPDF_VERSION} && \
+    ./configure --help && \
+    export CXX=$(command -v g++) && \
+    export PYTHON=$(command -v python3) && \
+    ./configure \
+      --prefix=/usr/local/venv && \
+    make -j$(($(nproc) - 1)) && \
+    make install && \
+    rm -rf /code
+
+# Install PYTHIA
+ARG PYTHIA_VERSION=8243
+# PYTHON_VERSION already exists in the base image
+# CentOS 7 gcc v4.8.5 is old enough need to specify -std=c++11
+RUN mkdir /code && \
+    cd /code && \
+    wget "https://pythia.org/download/pythia${PYTHIA_VERSION:0:2}/pythia${PYTHIA_VERSION}.tgz" && \
+    tar xvfz pythia${PYTHIA_VERSION}.tgz && \
+    cd pythia${PYTHIA_VERSION} && \
+    ./configure --help && \
+    export PYTHON_MINOR_VERSION=${PYTHON_VERSION::-3} && \
+    ./configure \
+      --prefix=/usr/local/venv \
+      --arch=Linux \
+      --cxx=g++ \
+      --enable-64bit \
+      --with-gzip \
+      --with-hepmc2=/usr/local/venv \
+      --with-lhapdf6=/usr/local/venv \
+      --with-fastjet3=/usr/local/venv \
+      --with-python-bin=/usr/local/venv/bin/ \
+      --with-python-lib=/usr/local/venv/lib/python${PYTHON_MINOR_VERSION} \
+      --with-python-include=/usr/local/include/python${PYTHON_MINOR_VERSION} \
+      --cxx-common="-O2 -m64 -pedantic -W -Wall -Wshadow -fPIC -std=c++11" \
+      --cxx-shared="-shared -std=c++11" && \
+    make -j$(($(nproc) - 1)) && \
+    make install && \
+    rm -rf /code
+
 ARG DELPHES_VERSION=3.5.0
 # hadolint ignore=SC1091
 # hadolint ignore=SC2046
