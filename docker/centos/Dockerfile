@@ -140,6 +140,7 @@ RUN mkdir -p /code && \
     source scl_source enable devtoolset-8 && \
     cmake \
       -DCMAKE_INSTALL_PREFIX=/usr/local/venv \
+      -DPYTHIA8_DATA=/usr/local/venv/share/Pythia8 \
       -S delphes \
       -B build && \
     cmake build -L && \
