@@ -57,9 +57,20 @@ RUN mkdir -p /code && \
     cmake --build build --target install && \
     rm -rf /code
 
-RUN chown -R --from=root docker /usr/local/root-cern && \
-    chown -R --from=root docker /home/docker && \
-    chown -R --from=root docker /home/docker/.mg5
+# Create non-root user "docker"
+RUN useradd --shell /bin/bash -m docker && \
+   cp /root/.bashrc /home/docker/ && \
+   cp /root/.bash_profile /home/docker/ && \
+   mkdir /home/docker/data && \
+   chown -R --from=root docker /home/docker && \
+   chown -R --from=root docker /usr/local/venv && \
+   chown -R --from=root docker /usr/local/root-cern
+
+# Use en_US.utf8 locale to avoid issues with ASCII encoding
+# as C.UTF-8 not available on CentOS 7
+ENV LC_ALL=en_US.utf8
+ENV LANG=en_US.utf8
+
 
 # Default user is root to avoid uid write permission problems with volumes
 ENV HOME /root
