@@ -91,6 +91,15 @@ jobs:
       - name: List built images
         run: docker images
 
+      - name: Run pytest tests
+        run: >-
+          docker run --rm
+          -v $PWD:$PWD
+          -w $PWD
+          scailfin/delphes-python-centos:sha-${GITHUB_SHA::8}
+          'python -m pip install pytest && \
+           pytest tests'
+
       - name: Build and publish to registry
         # every PR will trigger a push event on main, so check the push event is actually coming from main
         # if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'scailfin/delphes-python'
