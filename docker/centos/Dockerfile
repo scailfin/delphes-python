@@ -162,6 +162,8 @@ RUN useradd --shell /bin/bash -m docker && \
 ENV LC_ALL=en_US.utf8
 ENV LANG=en_US.utf8
 
+ENV PYTHONPATH=/usr/local/venv/lib:${PYTHONPATH}
+ENV LD_LIBRARY_PATH=/usr/local/venv/lib:$LD_LIBRARY_PATH
 
 # Default user is root to avoid uid write permission problems with volumes
 ENV HOME /root
