@@ -110,7 +110,7 @@ RUN mkdir /code && \
     cd pythia${PYTHIA_VERSION} && \
     source scl_source enable devtoolset-8 && \
     ./configure --help && \
-    export PYTHON_MINOR_VERSION=${PYTHON_VERSION::-3} && \
+    export PYTHON_MINOR_VERSION=${PYTHON_VERSION::3} && \
     ./configure \
       --prefix=/usr/local/venv \
       --arch=Linux \
