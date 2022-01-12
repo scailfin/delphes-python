@@ -1,4 +1,4 @@
-ARG BUILDER_IMAGE=neubauergroup/centos-build-base:3.8.11
+ARG BUILDER_IMAGE=neubauergroup/centos-build-base:3.9.9
 FROM neubauergroup/centos-root-base:6.24.00 as root_cern_image
 FROM ${BUILDER_IMAGE} as builder
 
